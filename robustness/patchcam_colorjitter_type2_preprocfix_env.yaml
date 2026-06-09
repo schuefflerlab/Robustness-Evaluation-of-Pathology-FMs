@@ -1,0 +1,101 @@
+# PatchCamelyon ColorJitter override (Type 2):
+# - train: CLEAN
+# - val/test: ColorJitter
+# Matches EVA baseline preprocessing: Resize -> CenterCrop -> ToDtype(scale=True) -> Normalize
+# ColorJitter applied BEFORE ToDtype/Normalize (pixel space).
+#
+# Env:
+#   CJ_BRIGHTNESS, CJ_CONTRAST, CJ_SATURATION, CJ_HUE
+#   RESIZE_DIM (int, default 224)
+#   NORMALIZE_MEAN / NORMALIZE_STD (can be list or stringified list)
+
+data:
+  init_args:
+    datasets:
+      predict:
+        # -------- TRAIN (clean) --------
+        - class_path: eva.vision.datasets.PatchCamelyon
+          init_args: &PRED_TRAIN_CLEAN
+            root: ${oc.env:DATA_ROOT}
+            split: train
+            download: ${oc.env:DOWNLOAD_DATA, false}
+            transforms:
+              class_path: torchvision.transforms.v2.Compose
+              init_args:
+                transforms:
+                  - class_path: torchvision.transforms.v2.Resize
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.CenterCrop
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.ToDtype
+                    init_args:
+                      dtype: torch.float32
+                      scale: true
+                  - class_path: torchvision.transforms.v2.Normalize
+                    init_args:
+                      mean: ${oc.decode:${oc.env:NORMALIZE_MEAN, "[0.485,0.456,0.406]"}}
+                      std:  ${oc.decode:${oc.env:NORMALIZE_STD,  "[0.229,0.224,0.225]"}}
+
+        # -------- VAL (color jitter) --------
+        - class_path: eva.vision.datasets.PatchCamelyon
+          init_args:
+            root: ${oc.env:DATA_ROOT}
+            split: val
+            download: ${oc.env:DOWNLOAD_DATA, false}
+            transforms:
+              class_path: torchvision.transforms.v2.Compose
+              init_args:
+                transforms:
+                  - class_path: torchvision.transforms.v2.Resize
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.CenterCrop
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.ColorJitter
+                    init_args:
+                      brightness: ${oc.decode:${oc.env:CJ_BRIGHTNESS, "0.0"}}
+                      contrast:   ${oc.decode:${oc.env:CJ_CONTRAST, "0.0"}}
+                      saturation: ${oc.decode:${oc.env:CJ_SATURATION, "0.0"}}
+                      hue:        ${oc.decode:${oc.env:CJ_HUE, "0.0"}}
+                  - class_path: torchvision.transforms.v2.ToDtype
+                    init_args:
+                      dtype: torch.float32
+                      scale: true
+                  - class_path: torchvision.transforms.v2.Normalize
+                    init_args:
+                      mean: ${oc.decode:${oc.env:NORMALIZE_MEAN, "[0.485,0.456,0.406]"}}
+                      std:  ${oc.decode:${oc.env:NORMALIZE_STD,  "[0.229,0.224,0.225]"}}
+
+        # -------- TEST (color jitter) --------
+        - class_path: eva.vision.datasets.PatchCamelyon
+          init_args:
+            root: ${oc.env:DATA_ROOT}
+            split: test
+            download: ${oc.env:DOWNLOAD_DATA, false}
+            transforms:
+              class_path: torchvision.transforms.v2.Compose
+              init_args:
+                transforms:
+                  - class_path: torchvision.transforms.v2.Resize
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.CenterCrop
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.ColorJitter
+                    init_args:
+                      brightness: ${oc.decode:${oc.env:CJ_BRIGHTNESS, "0.0"}}
+                      contrast:   ${oc.decode:${oc.env:CJ_CONTRAST, "0.0"}}
+                      saturation: ${oc.decode:${oc.env:CJ_SATURATION, "0.0"}}
+                      hue:        ${oc.decode:${oc.env:CJ_HUE, "0.0"}}
+                  - class_path: torchvision.transforms.v2.ToDtype
+                    init_args:
+                      dtype: torch.float32
+                      scale: true
+                  - class_path: torchvision.transforms.v2.Normalize
+                    init_args:
+                      mean: ${oc.decode:${oc.env:NORMALIZE_MEAN, "[0.485,0.456,0.406]"}}
+                      std:  ${oc.decode:${oc.env:NORMALIZE_STD,  "[0.229,0.224,0.225]"}}

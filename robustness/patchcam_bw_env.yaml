@@ -1,0 +1,78 @@
+data:
+  init_args:
+    datasets:
+      predict:
+        - class_path: eva.vision.datasets.PatchCamelyon
+          init_args:
+            root: ${oc.env:DATA_ROOT}
+            split: train
+            download: ${oc.env:DOWNLOAD_DATA, false}
+            transforms:
+              class_path: torchvision.transforms.v2.Compose
+              init_args:
+                transforms:
+                  - class_path: torchvision.transforms.v2.ToImage
+                  - class_path: torchvision.transforms.v2.Resize
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.Grayscale
+                    init_args:
+                      num_output_channels: 3
+                  - class_path: torchvision.transforms.v2.ToDtype
+                    init_args:
+                      dtype: torch.float32
+                      scale: true
+                  - class_path: torchvision.transforms.v2.Normalize
+                    init_args:
+                      mean: ${oc.env:NORMALIZE_MEAN}
+                      std: ${oc.env:NORMALIZE_STD}
+
+        - class_path: eva.vision.datasets.PatchCamelyon
+          init_args:
+            root: ${oc.env:DATA_ROOT}
+            split: val
+            download: ${oc.env:DOWNLOAD_DATA, false}
+            transforms:
+              class_path: torchvision.transforms.v2.Compose
+              init_args:
+                transforms:
+                  - class_path: torchvision.transforms.v2.ToImage
+                  - class_path: torchvision.transforms.v2.Resize
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.Grayscale
+                    init_args:
+                      num_output_channels: 3
+                  - class_path: torchvision.transforms.v2.ToDtype
+                    init_args:
+                      dtype: torch.float32
+                      scale: true
+                  - class_path: torchvision.transforms.v2.Normalize
+                    init_args:
+                      mean: ${oc.env:NORMALIZE_MEAN}
+                      std: ${oc.env:NORMALIZE_STD}
+
+        - class_path: eva.vision.datasets.PatchCamelyon
+          init_args:
+            root: ${oc.env:DATA_ROOT}
+            split: test
+            download: ${oc.env:DOWNLOAD_DATA, false}
+            transforms:
+              class_path: torchvision.transforms.v2.Compose
+              init_args:
+                transforms:
+                  - class_path: torchvision.transforms.v2.ToImage
+                  - class_path: torchvision.transforms.v2.Resize
+                    init_args:
+                      size: ${oc.env:RESIZE_DIM, 224}
+                  - class_path: torchvision.transforms.v2.Grayscale
+                    init_args:
+                      num_output_channels: 3
+                  - class_path: torchvision.transforms.v2.ToDtype
+                    init_args:
+                      dtype: torch.float32
+                      scale: true
+                  - class_path: torchvision.transforms.v2.Normalize
+                    init_args:
+                      mean: ${oc.env:NORMALIZE_MEAN}
+                      std: ${oc.env:NORMALIZE_STD}

@@ -1,0 +1,44 @@
+# Pathryoshka backbone override for EVA crc predict_fit.
+# re-specify the full list
+
+trainer:
+  class_path: eva.Trainer
+  init_args:
+    callbacks:
+      - class_path: eva.callbacks.ConfigurationLogger
+
+      - class_path: lightning.pytorch.callbacks.TQDMProgressBar
+        init_args:
+          refresh_rate: ${oc.env:TQDM_REFRESH_RATE, 1}
+
+      - class_path: lightning.pytorch.callbacks.LearningRateMonitor
+        init_args:
+          logging_interval: epoch
+
+      - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+        init_args:
+          filename: best
+          save_last: ${oc.env:SAVE_LAST, false}
+          save_top_k: 1
+          monitor: ${oc.env:MONITOR_METRIC, val/MulticlassAccuracy}
+          mode: ${oc.env:MONITOR_METRIC_MODE, max}
+
+      - class_path: lightning.pytorch.callbacks.EarlyStopping
+        init_args:
+          min_delta: 0
+          patience: ${oc.env:PATIENCE, 7}
+          monitor: ${oc.env:MONITOR_METRIC, val/MulticlassAccuracy}
+          mode: ${oc.env:MONITOR_METRIC_MODE, max}
+
+      - class_path: eva.callbacks.ClassificationEmbeddingsWriter
+        init_args:
+          output_dir: ${oc.env:EMBEDDINGS_ROOT, ./data/embeddings}/${oc.env:MODEL_NAME, dino_vits16}/crc
+          dataloader_idx_map:
+            0: train
+            1: val
+          backbone:
+            class_path: eva.vision.models.wrappers.from_timm.TimmModel
+            init_args:
+              model_name: hf-hub:SchuefflerLab/pathryoshka-b
+              pretrained: true
+          overwrite: false
