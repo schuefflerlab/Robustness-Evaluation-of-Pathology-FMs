@@ -235,4 +235,4 @@ For questions or issues, please open an issue in this repository.
 
 ## Acknowledgments
 
-This project leverages the [Kaiko AI EVA framework](https://github.com/kaiko-ai/eva) for foundation model evaluation.
+This project builds on the [Kaiko AI EVA framework](https://github.com/kaiko-ai/eva) for foundation model evaluation.
