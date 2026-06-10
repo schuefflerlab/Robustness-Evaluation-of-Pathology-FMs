@@ -1,6 +1,6 @@
 # Robustness Evaluation of Pathology Foundation Models
 
-A comprehensive evaluation framework for assessing the robustness of foundation models in digital pathology under various image corruption scenarios. This codebase is fully integrated with the [Kaiko EVA](https://github.com/kaiko-ai/eva) framework.
+An evaluation framework for assessing the robustness of foundation models in digital pathology under various image corruption scenarios. This codebase is fully integrated with the [Kaiko EVA](https://github.com/kaiko-ai/eva) framework.
 
 ## Overview
 
@@ -28,6 +28,8 @@ This project evaluates how well state-of-the-art foundation models for pathology
 
 - **Comprehensive Metrics**: AUROC, Balanced Accuracy, F1 Score, and Recall for thorough model characterization
 
+![Evaluation Pipeline](images/evaluation-pipeline.png)
+
 ## Repository Structure
 
 ```
@@ -46,28 +48,7 @@ Robustness-Evaluation-of-Pathology-FMs/
     ├── crc_blur_type2_env.yaml
     ├── crc_bw_env.yaml
     ├── crc_bw_type2_env.yaml
-    ├── crc_colorjitter_env.yaml
-    ├── crc_colorjitter_type2_env.yaml
-    ├── crc_gamma_env.yaml
-    ├── crc_gamma_type2_env.yaml
-    ├── crc_jpeg_env.yaml
-    ├── crc_jpeg_type2_env.yaml
-    ├── crc_pepper_env.yaml
-    ├── crc_pepper_type2_env.yaml
-    ├── crc_rotate_env.yaml
-    ├── crc_rotate_type2_env.yaml
-    ├── patchcam_blur_env.yaml
-    ├── patchcam_blur_type2_env.yaml
-    ├── patchcam_bw_env.yaml
-    ├── patchcam_bw_type2_env.yaml
-    ├── patchcam_colorjitter_env.yaml
-    ├── patchcam_colorjitter_type2_env.yaml
-    ├── patchcam_gamma_env.yaml
-    ├── patchcam_gamma_type2_env.yaml
-    ├── patchcam_jpeg_env.yaml
-    ├── patchcam_jpeg_type2_env.yaml
-    ├── patchcam_pepper_env.yaml
-    ├── patchcam_pepper_type2_env.yaml
+    ├── ...
     ├── patchcam_rotate_env.yaml
     ├── patchcam_rotate_type2_env.yaml
     ├── pathryoshka_timm_backbone.yaml
@@ -75,13 +56,14 @@ Robustness-Evaluation-of-Pathology-FMs/
     └── crc_public_paths.yaml
 ```
 
+
 ## Quick Start
 
 ### Prerequisites
 
 - PyTorch 23.11+ (nvidia container or custom installation)
 - EVA framework from Kaiko AI
-- CUDA-capable GPU (minimum H100 recommended)
+- CUDA-capable GPU (minimum V100 recommended)
 - Required Python packages: pandas, matplotlib, numpy, torch, torchvision, lightning
 
 ### Configuration
@@ -110,13 +92,19 @@ sbatch patchcam_sweep.sbatch
 #### Option 2: Direct Python execution
 
 ```bash
-export HF_TOKEN="your_huggingface_token"
-export MODEL_NAME="pathology/mahmood_uni2_h"
-export AUGMENTATION="gaussian_blur"
-export DATA_ROOT="/path/to/crc_eva_layout"
+export HF_TOKEN=your_huggingface_token
+export MODEL_NAME=pathology/paige_virchow2
+export NORMALIZE_MEAN="[0.485,0.456,0.406]"
+export NORMALIZE_STD="[0.229,0.224,0.225]"
+export IN_FEATURES=1280
+
+export AUGMENTATION="color_jitter"
+export DATASET_NAME="patch_camelyon"
+export DATA_ROOT="/path/to/Patch_Cam"
 export RESULTS_BASE="/path/to/results"
 
-python robustness/run_patchcam_sweep.py
+MODE="type1" \
+python3 /path/to/code/robustness/run_patchcam_sweep.py
 ```
 
 ## Evaluation Pipeline
@@ -134,14 +122,10 @@ python robustness/run_patchcam_sweep.py
 
 The evaluation produces several outputs:
 
-- **Robustness Curves**: `*robustness_curves.png` - Performance vs corruption severity
-- **Comparison Plots**: `*robustness_delta_matrix_plot.png` - Model-to-model comparisons
-- **Excel Results**: `robustness_auroc_*.xlsx` containing:
-  - Per-level AUROC drops
-  - Per-augmentation aggregates
-  - Per-dataset/model summaries
-  - Plot data for reproduction
-
+- **Robustness Curves**: Performance vs corruption severity
+- **Comparison Plots**:  Model-to-model comparisons
+- **Mean Corruption Drop**:     Model-to-model summary comparisons
+ 
 ## Metrics & Scoring
 
 ### Mean Corruption Drop (MCD)
@@ -149,13 +133,13 @@ The evaluation produces several outputs:
 The primary robustness metric is the Mean Corruption Drop (MCD), computed as:
 
 ```
-MCD = mean(baseline_AUROC - corrupted_AUROC) across all severity levels
+MCD = mean for all corruption of the mean(baseline_AUROC - corrupted_AUROC) across all severity levels
 ```
 
 Lower MCD indicates higher robustness. Results are aggregated across:
 
-1. All corruption levels for each augmentation
-2. All augmentations for each model/dataset/mode combination
+1. All corruption levels for each corruption type
+2. For each model/dataset/mode combination
 
 ## Container Setup
 
@@ -242,7 +226,7 @@ python3 -m pip install --no-cache-dir "numpy<2" "torch<2.6" "torchvision<0.21" "
 
 ## License
 
-[Add your license information here]
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Contact
 
