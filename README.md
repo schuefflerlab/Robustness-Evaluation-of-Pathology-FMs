@@ -28,6 +28,7 @@ This project evaluates how well state-of-the-art foundation models for pathology
 
 - **Comprehensive Metrics**: AUROC, Balanced Accuracy, F1 Score, and Recall for thorough model characterization
 
+
 ![Evaluation Pipeline](images/evaluation-pipeline.png)
 
 ## Repository Structure
