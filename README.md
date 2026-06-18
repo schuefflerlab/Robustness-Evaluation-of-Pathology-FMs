@@ -20,7 +20,7 @@ This project evaluates how well state-of-the-art foundation models for pathology
 
 - **Multiple Datasets**: Evaluate on:
   - CRC (Colorectal Cancer) dataset
-  - PatchCamelyon dataset
+  - PatchCamelyon (Breast cancer metastasis in lymph nodes) dataset
 
 - **Dual Mode Testing**: Type1 and Type2 evaluation modes capturing different corruption behavior patterns
 
@@ -190,9 +190,9 @@ The framework evaluates the following pathology foundation models:
 - `random_rotate90` - 90-degree rotation
 - `black_white` - Grayscale conversion
 - `jpeg_compression` - JPEG quality reduction
-- `color_jitter` - Color brightness/contrast/saturation changes
-- `pepper_noise` - Salt-and-pepper noise
-- `gamma` - Gamma correction
+- `color_jitter` - Color brightness/contrast/saturation and hue changes
+- `pepper_noise` - Pepper noise
+- `gamma` - Gamma modification
 - `gaussian_blur` - Gaussian blur at various kernel sizes
 
 ## Troubleshooting
